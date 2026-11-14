@@ -1,0 +1,20 @@
+{
+  "name": "evlife-battery-reliability",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-user EV battery reliability analysis workspace",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "migrate:neon": "node scripts/migrate-sqlite-to-neon.js"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "pg": "^8.16.3"
+  }
+}

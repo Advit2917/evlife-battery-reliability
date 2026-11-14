@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EVLife | Battery Reliability & Degradation</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="auth-gate" id="authGate">
+  <form class="auth-card" id="authForm">
+    <div class="brand auth-brand"><div class="brand-mark">EV</div><div><b>EVLife</b><small>BATTERY ANALYTICS</small></div></div>
+    <div class="eyebrow">YOUR RESEARCH WORKSPACE</div>
+    <h1 id="authTitle">Sign in to EVLife</h1>
+    <p id="authDescription">Sign in to access your saved battery profiles and analysis settings.</p>
+    <label>Email address<input id="authEmail" type="email" autocomplete="email" maxlength="254" required></label>
+    <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="12" maxlength="256" required></label>
+    <button class="primary-btn" id="authSubmit" type="submit">Sign in</button>
+    <p class="auth-switch"><span id="authSwitchText">New to EVLife?</span> <button class="text-btn" id="authToggle" type="button">Create an account</button></p>
+    <p id="authMessage" class="message" aria-live="polite"></p>
+  </form>
+</section>
+<div class="app-shell" id="appShell" hidden>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">EV</div><div><b>EVLife</b><small>BATTERY ANALYTICS</small></div></div>
+    <div class="side-label">RESEARCH WORKSPACE</div>
+    <nav id="navigation">
+      <button class="nav-link active" data-view="overview"><span>◫</span> Overview</button>
+      <button class="nav-link" data-view="input"><span>⌁</span> Battery information</button>
+      <button class="nav-link" data-view="degradation"><span>⌁</span> Degradation prediction</button>
+      <button class="nav-link" data-view="weibull"><span>◷</span> Weibull reliability</button>
+      <button class="nav-link" data-view="montecarlo"><span>⟳</span> Monte Carlo simulation</button>
+      <button class="nav-link" data-view="validation"><span>▤</span> Model validation</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="dot"></span> Private research workspace<small>Your data is saved to your account</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div><span class="crumb">EV BATTERY RELIABILITY FRAMEWORK</span><h1 id="pageTitle">Overview</h1></div><div class="top-actions"><span class="save-status" id="saveStatus" role="status" aria-live="polite">Not saved yet</span><span class="user-email" id="userEmail"></span><button class="outline-btn" id="signOut">Sign out</button></div></header>
+    <p class="app-message" id="appMessage" role="status" aria-live="polite"></p>
+
+    <section class="view active" id="view-overview">
+      <div class="welcome"><div><div class="eyebrow">RESEARCH DASHBOARD</div><h2>Battery reliability, made understandable.</h2><p>Enter operating conditions, explore degradation and reliability, run a Monte Carlo simulation, and review validation metrics.</p></div><div class="welcome-icon">▥</div></div>
+      <div class="notice warning"><b>Model calibration required</b><span>EVLife stores each account's data and calculates the equations configured below. No fitted research coefficients or experimental dataset were provided, so results remain unavailable until you enter parameters validated for your study.</span></div>
+      <div class="metric-grid three">
+        <article class="metric-card"><label>Latest battery SoH</label><strong id="ovSoh">—</strong><small>Calculated in degradation module</small></article>
+        <article class="metric-card"><label>Reliability R(t)</label><strong id="ovRel">—</strong><small>Based on Weibull parameters</small></article>
+        <article class="metric-card"><label>Estimated B10 life</label><strong id="ovB10">—</strong><small>Same distance unit as Weibull input</small></article>
+        <article class="metric-card"><label>Monte Carlo mean life</label><strong id="ovMcMean">—</strong><small id="ovMcUnit">Run a simulation to calculate</small></article>
+        <article class="metric-card"><label>Monte Carlo P5–P95</label><strong id="ovMcRange">—</strong><small id="ovMcRangeNote">Life distribution range</small></article>
+        <article class="metric-card"><label>Validation RMSE</label><strong id="ovRmse">—</strong><small id="ovR2">Calculate validation metrics</small></article>
+      </div>
+      <div class="grid-two">
+        <article class="card"><div class="card-head"><div><h3>Research workflow</h3><p>Move through the five project modules.</p></div></div>
+          <div class="workflow"><div><i>01</i><span><b>Battery information</b><small>Capture six operating conditions</small></span></div><div><i>02</i><span><b>Degradation prediction</b><small>Estimate SoH and 80% threshold</small></span></div><div><i>03</i><span><b>Weibull reliability</b><small>Reliability, hazard and B-life</small></span></div><div><i>04</i><span><b>Monte Carlo simulation</b><small>Life distribution and percentiles</small></span></div><div><i>05</i><span><b>Model validation</b><small>Regression and distribution metrics</small></span></div></div>
+        </article>
+        <article class="card"><div class="card-head"><div><h3>Current battery profile</h3><p>Most recently submitted input</p></div><button class="text-btn" data-go="input">Edit input →</button></div><div id="overviewProfile" class="empty-state">No battery information submitted yet. Open Battery information to enter your data.</div></article>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>Weibull scale sensitivity</h3><p>Mathematical what-if comparison at the selected distance; ±10% scale changes are not measured operating effects.</p></div><button class="text-btn" data-go="weibull">Configure →</button></div><canvas id="overviewScenarioChart" height="115"></canvas></div>
+    </section>
+
+    <section class="view" id="view-input">
+      <div class="section-intro"><div><div class="eyebrow">MODULE 01</div><h2>Battery information & input</h2><p>Enter the operating conditions used by the analysis modules.</p></div><span class="module-icon">⌁</span></div>
+      <form id="batteryForm" class="card">
+        <div class="form-grid">
+          <label>Battery temperature <span>°C</span><input id="temperature" type="number" step="any" required></label>
+          <label>Cycle count <span>cycles</span><input id="cycles" type="number" min="0" step="1" required></label>
+          <label>Fast-charge percentage <span>%</span><input id="fastCharge" type="number" min="0" max="100" step="any" required></label>
+          <label>Average C-rate <span>C</span><input id="cRate" type="number" min="0" step="any" required></label>
+          <label>Average velocity <span>km/h</span><input id="velocity" type="number" min="0" step="any" required></label>
+          <label>Road gradient <span>%</span><input id="gradient" type="number" step="any" required></label>
+        </div>
+        <div class="form-note">Road gradient may be negative for downhill travel. Fast-charge percentage must be between 0 and 100. Saved profiles are private to your account.</div>
+        <div class="form-actions"><button class="primary-btn" type="submit">Save battery profile</button><button class="outline-btn" id="clearProfile" type="button">Remove saved profile</button></div>
+        <p id="inputMessage" class="message" aria-live="polite"></p>
+      </form>
+      <div class="card"><div class="card-head"><div><h3>Saved operating profile</h3><p>These values are used as the current profile across the dashboard.</p></div><span class="status-tag" id="profileStatus">NOT SET</span></div><div class="profile-grid" id="profileGrid"></div></div>
+    </section>
+
+    <section class="view" id="view-degradation">
+      <div class="section-intro"><div><div class="eyebrow">MODULE 02</div><h2>Battery degradation prediction</h2><p>Estimate capacity fade and the distance/cycle point at which SoH reaches 80%.</p></div><span class="module-icon">⌁</span></div>
+      <div class="notice warning"><b>Calibration required</b><span>This module uses a transparent linear cycle-fade equation. Enter coefficients fitted from your study, or replace the equation with your validated research model before interpreting results.</span></div>
+      <div class="grid-two">
+        <article class="card">
+          <div class="card-head"><div><h3>Degradation model settings</h3><p>Enter your study's calibrated parameters</p></div></div>
+          <div class="settings-grid">
+            <label>Initial SoH (%)<input id="initialSoh" type="number" min="0.1" max="100" step=".1"></label>
+            <label>Capacity fade per 1,000 cycles (%)<input id="fadeRate" type="number" min="0.01" step=".01"></label>
+            <label>Cycles per year<input id="cyclesYear" type="number" min="1" step="1"></label>
+            <label>Cycle-count horizon<input id="cycleHorizon" type="number" min="100" step="100"></label>
+          </div>
+          <button class="primary-btn" id="runDegradation">Update degradation model</button>
+        </article>
+        <article class="card result-highlight"><label>Predicted SoH at current cycle count</label><strong id="currentSoh">—</strong><div class="submetrics"><div><small>Capacity fade</small><b id="capacityFade">—</b></div><div><small>Cycles to 80% SoH</small><b id="cycles80">—</b></div><div><small>Years to 80% (estimated)</small><b id="years80">—</b></div></div></article>
+      </div>
+      <article class="card"><div class="card-head"><div><h3>SoH degradation curve</h3><p>Linear cycle-fade equation using the calibrated parameters you provide.</p></div><span class="legend-key">● SoH &nbsp; ─ 80% threshold</span></div><canvas id="degradationChart" height="135"></canvas></article>
+      <div class="card"><div class="card-head"><div><h3>Interpretation</h3></div></div><p id="degradationText" class="body-copy">Submit a battery profile to calculate the current estimate.</p></div>
+    </section>
+
+    <section class="view" id="view-weibull">
+      <div class="section-intro"><div><div class="eyebrow">MODULE 03</div><h2>Weibull reliability analysis</h2><p>Calculate survival reliability, hazard rate, B10 and B50 life.</p></div><span class="module-icon">◷</span></div>
+      <div class="notice warning"><b>Parameter source</b><span>Enter the shape (β), scale (η), and mission distance fitted or specified in your study. EVLife does not supply or infer research parameters.</span></div>
+      <div class="grid-two">
+        <article class="card"><div class="card-head"><div><h3>Weibull parameters</h3><p>Two-parameter Weibull distribution</p></div></div>
+          <div class="settings-grid">
+            <label>Shape parameter β<input id="beta" type="number" min=".01" step=".01" required></label>
+            <label>Scale parameter η<input id="eta" type="number" min=".01" step="any" required></label>
+            <label>Mission distance t<input id="mission" type="number" min="0" step="any" required></label>
+            <label>Distance unit<input id="distanceUnit" type="text" value="km" maxlength="12" required></label>
+          </div><button class="primary-btn" id="runWeibull">Calculate reliability</button>
+        </article>
+        <article class="card result-highlight"><label>Reliability at mission distance R(t)</label><strong id="reliabilityValue">—</strong><div class="submetrics"><div><small>Hazard rate h(t)</small><b id="hazardValue">—</b></div><div><small>B10 life</small><b id="b10Value">—</b></div><div><small>B50 life</small><b id="b50Value">—</b></div></div></article>
+      </div>
+      <div class="grid-two">
+        <article class="card"><div class="card-head"><div><h3>Reliability curve</h3><p>Probability of survival versus distance.</p></div></div><canvas id="reliabilityChart" height="145"></canvas></article>
+        <article class="card"><div class="card-head"><div><h3>Hazard-rate curve</h3><p>Instantaneous failure rate.</p></div></div><canvas id="hazardChart" height="145"></canvas></article>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>Scale sensitivity</h3><p>Compare the configured scale with mathematical ±10% changes. These are not empirical operating scenarios.</p></div></div>
+        <div class="scenario-table-wrap"><table><thead><tr><th>Scenario</th><th>Shape β</th><th>Scale η</th><th>Reliability at t</th></tr></thead><tbody id="scenarioRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-montecarlo">
+      <div class="section-intro"><div><div class="eyebrow">MODULE 04</div><h2>Monte Carlo simulation</h2><p>Generate 10,000 life samples from the configured Weibull distribution.</p></div><span class="module-icon">⟳</span></div>
+      <div class="notice warning"><b>Simulation basis</b><span>This simulation samples the Weibull lifetime distribution configured in Module 03. It is not a separately trained machine-learning model; supply calibrated β and η for research use.</span></div>
+      <div class="card simulation-controls"><div><h3>Simulation settings</h3><p>10,000 runs per simulation. Change the random seed to reproduce a different sample.</p></div><label>Random seed<input id="randomSeed" type="number" value="42" step="1"></label><button class="primary-btn" id="runSimulation">Run 10,000 simulations</button></div>
+      <div class="metric-grid four">
+        <article class="metric-card"><label>Mean life</label><strong id="mcMean">—</strong><small id="mcUnit">Distance units</small></article>
+        <article class="metric-card"><label>Standard deviation</label><strong id="mcStd">—</strong><small>Sample standard deviation</small></article>
+        <article class="metric-card"><label>P5 life</label><strong id="mcP5">—</strong><small>5th percentile</small></article>
+        <article class="metric-card"><label>P95 life</label><strong id="mcP95">—</strong><small>95th percentile</small></article>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>Simulated battery life distribution</h3><p>Histogram of 10,000 generated life samples.</p></div></div><canvas id="histogramChart" height="155"></canvas></div>
+      <div class="card"><div class="card-head"><div><h3>Simulation summary</h3></div></div><p id="mcSummary" class="body-copy">Run the simulation to generate the distribution and summary statistics.</p></div>
+    </section>
+
+    <section class="view" id="view-validation">
+      <div class="section-intro"><div><div class="eyebrow">MODULE 05</div><h2>Model validation & results</h2><p>Calculate regression metrics and a one-sample Kolmogorov–Smirnov statistic from paired observations.</p></div><span class="module-icon">▤</span></div>
+      <div class="notice warning"><b>Use measured data</b><span>Metrics are calculated from the observed and predicted values you enter. EVLife does not include sample results; use matched data from your study.</span></div>
+      <div class="card">
+        <div class="card-head"><div><h3>Observed vs predicted data</h3><p>Enter comma-separated numeric values in matching order. Data is saved to your account.</p></div></div>
+        <div class="validation-inputs">
+          <label>Observed values<textarea id="observedData" rows="4" placeholder="e.g. values from your measured dataset"></textarea></label>
+          <label>Predicted values<textarea id="predictedData" rows="4" placeholder="e.g. corresponding model predictions"></textarea></label>
+        </div>
+        <div class="form-actions"><button class="primary-btn" id="calculateMetrics">Calculate validation metrics</button><span id="validationMessage" class="message"></span></div>
+      </div>
+      <div class="metric-grid three">
+        <article class="metric-card"><label>R²</label><strong id="r2Value">—</strong><small>Coefficient of determination</small></article>
+        <article class="metric-card"><label>RMSE</label><strong id="rmseValue">—</strong><small>Root mean squared error</small></article>
+        <article class="metric-card"><label>MAE</label><strong id="maeValue">—</strong><small>Mean absolute error</small></article>
+      </div>
+      <div class="grid-two">
+        <article class="card"><div class="card-head"><div><h3>Observed vs predicted</h3><p>Closer to the diagonal indicates closer agreement.</p></div></div><canvas id="validationChart" height="150"></canvas></article>
+        <article class="card"><div class="card-head"><div><h3>Residual diagnostics</h3><p>Residual = observed − predicted.</p></div></div><canvas id="residualChart" height="150"></canvas></article>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>One-sample K-S goodness-of-fit</h3><p>Compare sorted observed values with a normal reference distribution estimated from the same sample.</p></div></div><div class="submetrics"><div><small>K-S statistic D</small><b id="ksValue">—</b></div><div><small>Sample size</small><b id="sampleCount">—</b></div><div><small>AIC</small><b id="aicValue">Not applicable</b></div></div><p class="footnote">The K-S value is a descriptive statistic here; its usual p-value is not shown because parameters are estimated from the same sample. AIC is not calculated for arbitrary observed/predicted pairs. Use a specified likelihood model to calculate AIC legitimately.</p></div>
+    </section>
+
+    <footer class="app-footer">EVLife · Probabilistic EV Battery Reliability &amp; Degradation Platform <span>Secure account workspace · Validate model assumptions before use</span></footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body></html>
