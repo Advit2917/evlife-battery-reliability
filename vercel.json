@@ -1,8 +1,9 @@
 {
   "version": 2,
   "functions": {
-    "api/[...route].js": {
-      "maxDuration": 30
-    }
+    "api/[...route].js": { "maxDuration": 30 },
+    "api/auth/login.js": { "maxDuration": 30 },
+    "api/auth/register.js": { "maxDuration": 30 },
+    "api/auth/logout.js": { "maxDuration": 30 }
   }
 }
