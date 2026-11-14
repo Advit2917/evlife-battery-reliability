@@ -19,7 +19,7 @@ file:// URL) and the Node server must remain running for saves to reach SQLite.
 The account header shows when changes are saving, saved, or if a save fails.
 
 VERCEL + NEON DEPLOYMENT
-1. Push this folder to a private GitHub repository (do not include .env,
+1. Push this folder to the GitHub repository connected to Vercel (do not include .env,
    node_modules, or data/*.sqlite).
 2. Import that repository into Vercel.
 3. Create a Neon Postgres project and copy its pooled connection string.
